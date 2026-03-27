@@ -8,6 +8,7 @@ import {
   updateConversationStatus,
   queueSnapshot,
 } from '../src/app.js'
+import { createNoopNotifier } from '../src/integrations/eventNotifier.js'
 
 test('support flow handles assignment, reply and status changes', () => {
   const store = createStore()
@@ -42,4 +43,10 @@ test('queue snapshot marks overdue conversations', () => {
 
   assert.equal(queue.length, 1)
   assert.equal(queue[0].overdue, true)
+})
+
+test('noop notifier returns disabled status', async () => {
+  const notifier = createNoopNotifier()
+  const result = await notifier({ type: 'conversation.created', payload: { id: '1' } })
+  assert.equal(result.delivered, false)
 })

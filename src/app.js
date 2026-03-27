@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { createNoopNotifier } from './integrations/eventNotifier.js'
 
 const VALID_STATUS = new Set(['new', 'open', 'waiting', 'resolved'])
 const VALID_ROLE = new Set(['client', 'operator'])
@@ -189,7 +190,15 @@ function readJsonBody(req) {
   })
 }
 
-export function createApp(store = createStore(), hub = createRealtimeHub()) {
+export function createApp(store = createStore(), options = {}) {
+  const hub = options.hub || createRealtimeHub()
+  const notifier = options.notifier || createNoopNotifier()
+
+  async function publishEvent(type, payload) {
+    hub.publish(type, payload)
+    await notifier({ type, payload, createdAt: new Date().toISOString() })
+  }
+
   return async function app(req, res) {
     const url = new URL(req.url || '/', 'http://localhost')
 
@@ -214,7 +223,7 @@ export function createApp(store = createStore(), hub = createRealtimeHub()) {
       if (req.method === 'POST' && url.pathname === '/conversations') {
         const payload = await readJsonBody(req)
         const conversation = createConversation(store, payload)
-        hub.publish('conversation.created', conversation)
+        await publishEvent('conversation.created', conversation)
         sendJson(res, 201, { conversation })
         return
       }
@@ -237,7 +246,7 @@ export function createApp(store = createStore(), hub = createRealtimeHub()) {
       if (req.method === 'PATCH' && assignMatch) {
         const payload = await readJsonBody(req)
         const updated = assignConversation(store, assignMatch[1], payload.operatorId)
-        hub.publish('conversation.assigned', updated)
+        await publishEvent('conversation.assigned', updated)
         sendJson(res, 200, { conversation: updated })
         return
       }
@@ -246,7 +255,7 @@ export function createApp(store = createStore(), hub = createRealtimeHub()) {
       if (req.method === 'POST' && messageMatch) {
         const payload = await readJsonBody(req)
         const updated = addMessage(store, messageMatch[1], payload)
-        hub.publish('conversation.message', updated)
+        await publishEvent('conversation.message', updated)
         sendJson(res, 201, { conversation: updated })
         return
       }
@@ -255,7 +264,7 @@ export function createApp(store = createStore(), hub = createRealtimeHub()) {
       if (req.method === 'PATCH' && statusMatch) {
         const payload = await readJsonBody(req)
         const updated = updateConversationStatus(store, statusMatch[1], payload.status)
-        hub.publish('conversation.status', updated)
+        await publishEvent('conversation.status', updated)
         sendJson(res, 200, { conversation: updated })
         return
       }
