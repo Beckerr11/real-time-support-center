@@ -1,34 +1,44 @@
-# real-time-support-center
+﻿# real-time-support-center
 
-Central de atendimento em tempo real para suporte ao cliente.
+![CI](https://github.com/Beckerr11/real-time-support-center/actions/workflows/ci.yml/badge.svg)
+
+Central de suporte em tempo real.
 
 ## Objetivo
-Construir uma base profissional para portfolio full stack com foco em simplicidade, clareza e evolucao incremental.
+Este repositorio faz parte de uma trilha de portfolio profissional full stack, com foco em simplicidade, clareza e boas praticas.
 
 ## Stack
-Node.js + WebSocket + React
+Node.js, SSE, fila de atendimento e SLA
 
-## MVP (v0.1)
-- Conversa em tempo real
-- Fila de atendimento
-- Status de conversa
-- Painel simples de operador
-
-## Estrutura inicial
-- docs/ROADMAP.md: plano de evolucao
-- src/: codigo fonte principal
-- 	ests/: testes iniciais
-- .github/workflows/ci.yml: pipeline minima
+## Funcionalidades implementadas
+- Fluxo de conversa cliente-operador
+- Fila com calculo de SLA e overdue
+- Eventos em tempo real via SSE
+- Notificador webhook opcional
 
 ## Como executar
-Veja as instrucoes no docs/ROADMAP.md e no bloco de setup abaixo.
-`ash
-npm install
+~~~bash
+npm ci
 npm test
 npm run dev
-`
+~~~
+
+## Scripts uteis
+- npm run dev, npm test
+
+## Qualidade
+- CI em .github/workflows/ci.yml
+- Dependabot em .github/dependabot.yml
+- Testes locais obrigatorios antes de merge
+
+## Documentacao
+- [Roadmap](docs/ROADMAP.md)
+- [Checklist de producao](docs/PRODUCTION-CHECKLIST.md)
+- [Contribuicao](CONTRIBUTING.md)
+- [Seguranca](SECURITY.md)
+
 ## Status
 - [x] Scaffold inicial
-- [ ] MVP funcional
-- [ ] Deploy publico
-- [ ] Observabilidade e seguranca avancada
+- [x] Base funcional com testes
+- [ ] Deploy publico com observabilidade completa
+- [ ] Versao 1.0.0 com demo publica
