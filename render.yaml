@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: real-time-support-center
+    runtime: node
+    plan: free
+    autoDeploy: true
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPPORT_WEBHOOK_URL
+        sync: false
